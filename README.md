@@ -7,6 +7,7 @@ A full-stack film database application developed using Java, REST APIs and React
 - Java
 - React
 - JavaScript
+- Tailwind
 - REST APIs
 - MySQL
 - Apache Tomcat 9

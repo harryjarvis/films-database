@@ -6,7 +6,7 @@ A full-stack film database application developed using Java, REST APIs and React
 
 A static frontend demonstration of the application is available here:
 
-🔗 https://harry-film-database-demo.netlify.app
+🔗 https://filmdatabasestatic.netlify.app
 
 **Note:** The live demo uses sample data to showcase the user interface and frontend functionality. The full Java/Tomcat backend and MySQL integration are included in this repository.
 

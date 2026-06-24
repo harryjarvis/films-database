@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Films Web App</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- React -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+
+    <!-- Babel (for JSX support) -->
+    <script src="https://unpkg.com/@babel/standalone@7.23.3/babel.min.js"></script>
+</head>
+
+<body class="bg-gray-100 m-0 p-0">
+    <div id="root" class="p-6"></div>
+    <script type="text/babel">
+        console.log("STATIC DEMO APP LOADED");
+
+const { useState, useEffect } = React;
+
+const demoFilms = [
+    {
+        id: 1,
+        title: "The Godfather",
+        year: 1972,
+        director: "Francis Ford Coppola",
+        stars: "Marlon Brando, Al Pacino, James Caan",
+        review: "A crime drama about the Corleone family and the transfer of power within a mafia dynasty."
+    },
+    {
+        id: 2,
+        title: "Alien",
+        year: 1979,
+        director: "Ridley Scott",
+        stars: "Sigourney Weaver, Tom Skerritt, Ian Holm",
+        review: "A science fiction horror film following the crew of the Nostromo after they encounter a deadly organism."
+    },
+    {
+        id: 3,
+        title: "The Dark Knight",
+        year: 2008,
+        director: "Christopher Nolan",
+        stars: "Christian Bale, Heath Ledger, Aaron Eckhart",
+        review: "A superhero crime thriller exploring Batman's conflict with the Joker in Gotham City."
+    }
+];
+
+// Handles search input and add film button
+function TopBar({ searchTerm, setSearchTerm, onSearch, onAddFilm }) {
+    return (
+        <div className="w-full bg-white border-b-2 border-gray-300 flex justify-between items-center px-6 py-3">
+            <div className="text-xl font-bold tracking-wide">
+                <span className="text-red-500">Film</span>{" "}
+                <span className="text-blue-500">Database</span>
+            </div>
+
+            <div className="flex items-center gap-2">
+                <input
+                    type="text"
+                    placeholder="Search films"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                            onSearch();
+                        }
+                    }}
+                    className="border rounded px-3 py-1 w-64 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+                <button
+                    onClick={onSearch}
+                    className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+                >
+                    Search
+                </button>
+                <button
+                    onClick={onAddFilm}
+                    className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
+                >
+                    Add Film
+                </button>
+            </div>
+        </div>
+    );
+}
+
+// Handles insert and update in a single form
+function FilmForm({ film, onClose, onSave }) {
+    const [title, setTitle] = useState(film ? film.title : "");
+    const [year, setYear] = useState(film ? film.year : "");
+    const [director, setDirector] = useState(film ? film.director : "");
+    const [stars, setStars] = useState(film ? film.stars : "");
+    const [review, setReview] = useState(film ? film.review : "");
+    const [error, setError] = useState("");
+
+    const handleSubmit = () => {
+        if (!title.trim() || !year || !director.trim() || !stars.trim() || !review.trim()) {
+            setError("All fields are required");
+            return;
+        }
+
+        if (year <= 1900) {
+            setError("Year must be a valid number");
+            return;
+        }
+
+        const filmData = {
+            id: film ? film.id : Date.now(),
+            title: title.trim(),
+            year: parseInt(year),
+            director: director.trim(),
+            stars: stars.trim(),
+            review: review.trim()
+        };
+
+        onSave(filmData);
+    };
+
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded shadow-lg p-6 w-full max-w-md">
+                <h2 className="text-xl font-bold mb-4">
+                    {film ? "Edit Film" : "Add Film"}
+                </h2>
+
+                {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
+
+                <div className="flex flex-col gap-3">
+                    <input
+                        type="text"
+                        placeholder="Title"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        className="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    />
+                    <input
+                        type="number"
+                        placeholder="Year"
+                        value={year}
+                        onChange={(e) => setYear(e.target.value)}
+                        className="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    />
+                    <input
+                        type="text"
+                        placeholder="Director"
+                        value={director}
+                        onChange={(e) => setDirector(e.target.value)}
+                        className="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    />
+                    <input
+                        type="text"
+                        placeholder="Stars"
+                        value={stars}
+                        onChange={(e) => setStars(e.target.value)}
+                        className="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    />
+                    <textarea
+                        placeholder="Review"
+                        value={review}
+                        onChange={(e) => setReview(e.target.value)}
+                        className="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        rows="3"
+                    />
+                </div>
+
+                <div className="flex justify-end gap-2 mt-4">
+                    <button
+                        onClick={onClose}
+                        className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        onClick={handleSubmit}
+                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                    >
+                        {film ? "Save Changes" : "Add Film"}
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// Manages state and demo CRUD functionality
+function App() {
+    const [films, setFilms] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [message, setMessage] = useState("");
+    const [searchTerm, setSearchTerm] = useState("");
+    const [showForm, setShowForm] = useState(false);
+    const [editingFilm, setEditingFilm] = useState(null);
+
+    useEffect(() => {
+        loadFilms();
+    }, []);
+
+    const loadFilms = () => {
+        setLoading(true);
+
+        setTimeout(() => {
+            setFilms(demoFilms);
+            setMessage("Static demo using sample data. Full Java/Tomcat backend available on GitHub.");
+            setLoading(false);
+        }, 300);
+    };
+
+    const searchFilms = () => {
+        setLoading(true);
+
+        setTimeout(() => {
+            const term = searchTerm.trim().toLowerCase();
+
+            const results = term
+                ? demoFilms.filter(film =>
+                    film.title.toLowerCase().includes(term) ||
+                    film.director.toLowerCase().includes(term) ||
+                    film.stars.toLowerCase().includes(term)
+                )
+                : demoFilms;
+
+            setFilms(results);
+            setMessage(term ? `Showing results for "${searchTerm}"` : "");
+            setLoading(false);
+        }, 300);
+    };
+
+    const deleteFilm = (id) => {
+        setFilms(prevFilms => prevFilms.filter(film => film.id !== id));
+        setMessage("Film removed from this demo session.");
+    };
+
+    const saveFilm = (filmData) => {
+        if (editingFilm) {
+            setFilms(prevFilms =>
+                prevFilms.map(film =>
+                    film.id === editingFilm.id ? { ...filmData, id: editingFilm.id } : film
+                )
+            );
+            setMessage("Film updated in this demo session.");
+        } else {
+            const newFilm = {
+                ...filmData,
+                id: Date.now()
+            };
+
+            setFilms(prevFilms => [...prevFilms, newFilm]);
+            setMessage("Film added in this demo session.");
+        }
+
+        setShowForm(false);
+        setEditingFilm(null);
+    };
+
+    const openAddForm = () => {
+        setEditingFilm(null);
+        setShowForm(true);
+    };
+
+    const openEditForm = (film) => {
+        setEditingFilm(film);
+        setShowForm(true);
+    };
+
+    const closeForm = () => {
+        setShowForm(false);
+        setEditingFilm(null);
+    };
+
+    return (
+        <div className="min-h-screen bg-gray-100">
+            <TopBar
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+                onSearch={searchFilms}
+                onAddFilm={openAddForm}
+            />
+
+            {showForm && (
+                <FilmForm
+                    film={editingFilm}
+                    onClose={closeForm}
+                    onSave={saveFilm}
+                />
+            )}
+
+            <div className="w-full px-6 py-6">
+                {loading && <p className="text-gray-500 mb-4">Loading films...</p>}
+                {message && <p className="text-sm text-blue-600 mb-4">{message}</p>}
+
+                <div className="w-full bg-white shadow rounded p-4">
+                    {films.length === 0 && !loading && (
+                        <p className="text-gray-500">No films to display</p>
+                    )}
+
+                    {films.map(film => (
+                        <div key={film.id} className="border-b py-3 last:border-b-0">
+                            <h2 className="font-bold text-lg">
+                                {film.title} ({film.year})
+                            </h2>
+                            <p className="text-sm text-gray-600">
+                                <span className="font-bold">Director:</span> {film.director}
+                            </p>
+                            <p className="text-sm text-gray-600">
+                                <span className="font-bold">Stars:</span> {film.stars}
+                            </p>
+                            <p className="text-sm text-gray-600">
+                                {film.review}
+                            </p>
+                            <div className="flex gap-2 mt-2">
+                                <button
+                                    onClick={() => openEditForm(film)}
+                                    className="text-sm px-2 py-1 bg-gray-600 text-white rounded hover:bg-green-600"
+                                >
+                                    Edit
+                                </button>
+                                <button
+                                    onClick={() => deleteFilm(film.id)}
+                                    className="text-sm px-2 py-1 bg-gray-600 text-white rounded hover:bg-red-600"
+                                >
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+    </script>
+</body>
+</html>

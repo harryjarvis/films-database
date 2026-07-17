@@ -1,5 +1,7 @@
 ![Full-Stack Film Database Application](images/project_banner.png)
 
+# Full-Stack Film Database Application
+
 A full-stack film database application developed using Java, REST APIs and React. The project demonstrates CRUD operations, MVC architecture, asynchronous frontend data handling and relational database integration.
 
 ## Live Demo
